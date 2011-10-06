@@ -58,22 +58,13 @@ abstract class LPAlgorithm {
 				JSONArray edges = json.getJSONArray(2);
 				ArrayList<Edge> edgeArray = new ArrayList<Edge>();
 				vertexLabelMap.put(vertexId, vertexLabel);
-				/*
-				Double deg = new Double(0);
-				if (vertexDegMap.containsKey(vertexId)) {
-					deg = vertexDegMap.get(vertexId);
-				} */
 				for (int i = 0; i < edges.length(); ++i) {
 					JSONArray edge = edges.getJSONArray(i);
 					Long destVertexId = edge.getLong(0);
 					Double edgeWeight = edge.getDouble(1);
-					// deg += edgeWeight;
 					edgeArray.add(new Edge(vertexId, destVertexId, edgeWeight));
-					// System.out.println(vertexId + " -> " + edgeDest + " : " + edgeWeight);
 				}
 				vertexAdjMap.put(vertexId, edgeArray);
-				
-				// vertexDegMap.put(vertexId, deg);
 			} catch (JSONException e) {
 				throw new IllegalArgumentException(
 						"Coundn't parse vertex from line: " + line, e);
@@ -106,7 +97,7 @@ abstract class LPAlgorithm {
 				vertexInAdjMap.put(vertexId, new ArrayList<Edge>());
 			}
 		}
-		// and add edges
+		// setup vertexInAdjMap
 		for (Long vertexId : vertexAdjMap.keySet()) {
 			for (Edge e : vertexAdjMap.get(vertexId)) {
 				vertexInAdjMap.get(e.getDest()).add(e);
@@ -138,7 +129,6 @@ abstract class LPAlgorithm {
 		while (lSetIter.hasNext()) {
 			Long l = lSetIter.next();
 			if (l.intValue() == 0) continue;
-			// System.out.println("label " + l + " is assigned to " + labelEnum);
 			labelIndexMap.put(l, new Long(labelEnum));
 			labelEnum++;
 		}
@@ -158,7 +148,6 @@ abstract class LPAlgorithm {
 				// labeled
 				labeledSize++;
 				int ix = labelIndexMap.get(vertexLabelMap.get(v)).intValue();
-				// System.out.println("label " + v + " label = " + vertexLabelMap.get(v) + ", ix = " + ix);
 				for (int i = 0; i < labelSize; ++i) {
 					arr.add((i == ix) ? 1.0 : 0.0);
 				}
@@ -176,7 +165,7 @@ abstract class LPAlgorithm {
 		System.out.println("Numebr of labeled vertices:    " + labeledSize);
 	}
 
-	abstract void run();
+	abstract void run(Double eps, Long maxIter);
 
 	// private
 	protected HashMap<Long,ArrayList<Edge>> vertexAdjMap; // out-edge

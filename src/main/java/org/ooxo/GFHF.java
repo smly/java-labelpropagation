@@ -1,32 +1,44 @@
 package org.ooxo;
 
-
-import java.util.Iterator;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-class GRF extends LPAlgorithm {
-	public GRF(int _steps) {
+class GFHF extends LPAlgorithm {
+	public GFHF(int _steps) {
 		steps = _steps;
 	}
-	public GRF() {
+	public GFHF() {
 		steps = 10;
 	}
 	
 	void debug() {
-		Iterator<Long> it = vertexFMap.keySet().iterator();
-		while (it.hasNext()) {
-			ArrayList<Double> arr = vertexFMap.get(it.next());
-			Iterator<Double> fMapIter = arr.iterator();
-			while (fMapIter.hasNext()) {
-				System.out.printf("%.04f", fMapIter.next());
-				System.out.print(fMapIter.hasNext() ? "   " : "\n");
+		ArrayList<Long> labels = new ArrayList<Long>(labelSize);
+		for (Long label : labelIndexMap.keySet()) {
+			labels.add(labelIndexMap.get(label).intValue(), label);
+		}
+		for (Long vertexId : vertexFMap.keySet()){
+			ArrayList<Double> arr = vertexFMap.get(vertexId);
+			System.out.printf("[%d,", vertexId);
+			ByteArrayOutputStream buff = new ByteArrayOutputStream();
+			PrintStream ps = new PrintStream(buff);
+			double maxFVal = 0.0;
+			int maxFValIx = 0;
+			for (int i = 0; i < labelSize; ++i) {
+				double fval = arr.get(i);
+				if (fval > maxFVal) {
+					maxFVal = fval;
+					maxFValIx = i;
+				}
+				ps.printf("[%d,%.04f]", labels.get(i), arr.get(i));
+				ps.printf(i != labelSize - 1 ? "," : "]\n");
 			}
+			System.out.print(labels.get(maxFValIx) + "," + buff.toString());
 		}
 	}
 	
 	double iter() {
-		//System.out.println("> iter ");
 		HashMap<Long,ArrayList<Double>> nextVertexFMap = new HashMap<Long,ArrayList<Double>>();
 		// for all vertex
 		double diff = 0.0;
@@ -64,19 +76,24 @@ class GRF extends LPAlgorithm {
 		return diff;
 	}
 	
-	void run() {
+	void run(Double eps, Long maxIter) {
 		showDetail();
+		System.out.println("eps:                           " + eps);
+		System.out.println("max iteration                  " + maxIter);
+
 		double diff = 0;
-		for (int i = 0; i < 100; ++i) {
+		int iter = 0;
+		for (int i = 0; i < maxIter; ++i) {
+			iter = i;
 			System.out.print(".");
 			System.out.flush();
 			diff = iter();
-			if (diff < 10e-5) break;
+			if (diff < eps) break;
 			if (i % 50 == 49) {
 				System.out.println("");
 			}
 		}
-		System.out.println("\neps = " + diff);
+		System.out.println("\niter = " + (iter + 1) + ", eps = " + diff);
 		debug();
 	}
 	
