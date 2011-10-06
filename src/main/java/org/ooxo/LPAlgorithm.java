@@ -138,7 +138,7 @@ abstract class LPAlgorithm {
 		while (lSetIter.hasNext()) {
 			Long l = lSetIter.next();
 			if (l.intValue() == 0) continue;
-			System.out.println("label " + l + " is assigned to " + labelEnum);
+			// System.out.println("label " + l + " is assigned to " + labelEnum);
 			labelIndexMap.put(l, new Long(labelEnum));
 			labelEnum++;
 		}
@@ -158,7 +158,7 @@ abstract class LPAlgorithm {
 				// labeled
 				labeledSize++;
 				int ix = labelIndexMap.get(vertexLabelMap.get(v)).intValue();
-				System.out.println("label " + v + " label = " + vertexLabelMap.get(v) + ", ix = " + ix);
+				// System.out.println("label " + v + " label = " + vertexLabelMap.get(v) + ", ix = " + ix);
 				for (int i = 0; i < labelSize; ++i) {
 					arr.add((i == ix) ? 1.0 : 0.0);
 				}

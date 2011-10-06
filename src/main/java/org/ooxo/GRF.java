@@ -14,21 +14,19 @@ class GRF extends LPAlgorithm {
 	}
 	
 	void debug() {
-		System.out.println("> debug");
-		
 		Iterator<Long> it = vertexFMap.keySet().iterator();
 		while (it.hasNext()) {
 			ArrayList<Double> arr = vertexFMap.get(it.next());
 			Iterator<Double> fMapIter = arr.iterator();
 			while (fMapIter.hasNext()) {
-				System.out.print(fMapIter.next().toString() + "  ");
+				System.out.printf("%.04f", fMapIter.next());
+				System.out.print(fMapIter.hasNext() ? "   " : "\n");
 			}
-			System.out.println("");
 		}
 	}
 	
 	double iter() {
-		System.out.println("> iter ");
+		//System.out.println("> iter ");
 		HashMap<Long,ArrayList<Double>> nextVertexFMap = new HashMap<Long,ArrayList<Double>>();
 		// for all vertex
 		double diff = 0.0;
@@ -45,37 +43,41 @@ class GRF extends LPAlgorithm {
 					long src = e.getSrc();
 					double deg = vertexDegMap.get(vertexId);
 					fValue += vertexFMap.get(src).get(l) * (w / deg);
-					System.out.println("(src,dst): " + src + "->" + vertexId + ", value = (" + fValue +"), deg = " + deg + ", label = " + l);
+					//System.out.println("(src,dst): " + src + "->" + vertexId + ", value = (" + fValue +"), deg = " + deg + ", label = " + l);
 				}
 				nextFValue.add(fValue);
 				if (vertexLabelMap.get(vertexId) == 0) {
 					diff += ((fValue > fValues.get(l)) ? fValue - fValues.get(l) : fValues.get(l) - fValue);
 				}
 			}
-			System.out.println(nextFValue);
+			//System.out.println(nextFValue);
 			nextVertexFMap.put(vertexId, nextFValue);
-			System.out.println("----");
+			//System.out.println("----");
 		}
 		// fix labeled vertex
 		for (Long vertexId : vertexLabelMap.keySet()) {
 			if (vertexLabelMap.get(vertexId) == 0) continue; // 0 means unlabeled vertex
-			System.out.println("fix: " + vertexId);
 			nextVertexFMap.put(vertexId, vertexFMap.get(vertexId));
 		}
 		vertexFMap = nextVertexFMap;
-		System.out.println(diff);
 		
 		return diff;
 	}
 	
 	void run() {
 		showDetail();
-		debug();
-		for (int i = 0; i < 50; ++i) {
-			double diff = iter();
-			if (diff < 10e-3) break;
-			debug();
+		double diff = 0;
+		for (int i = 0; i < 100; ++i) {
+			System.out.print(".");
+			System.out.flush();
+			diff = iter();
+			if (diff < 10e-5) break;
+			if (i % 50 == 49) {
+				System.out.println("");
+			}
 		}
+		System.out.println("\neps = " + diff);
+		debug();
 	}
 	
 	// private
