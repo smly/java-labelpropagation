@@ -1,6 +1,6 @@
 ## java-labelpropagation
 
-an Java implementation of GFHF ([Zhu and Ghahramani, 2002]).
+Java implementation of GFHF ([Zhu and Ghahramani, 2002]).
 
      Iterate
       1. \hat{Y}^{(t+1)} \leftArrow D^{-1} W \hat{Y}^{(t)}
